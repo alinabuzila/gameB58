@@ -51,14 +51,14 @@
 .eqv  BLACK_COLOR 0x000000
     
 .data 
-    CURR_POS: 0x10008080
+    CURR_POS: 0x10008e00
     BASE_ADDRESS: 0x10008000
 .text
 
 main: 
     jal DRAW_USER
-    j CHECK_KEY_INPUT
-    #j GRAVITY
+    #j CHECK_KEY_INPUT
+    j GRAVITY
 
 CHECK_KEY_INPUT:
     li $t9, 0xffff0000 
@@ -119,12 +119,12 @@ MOVE_UP:
     sub $s1, $s0, $s1 # diff btwn curr and start
     blt $s1, 128, main 
 
-    addi $s0, $s0, -128 # new pos, move 1 unit left 
+    addi $s0, $s0, 1024 # new pos, move 1 unit left 
 
     jal ERASE_USER # erase character from old pos
     
     # update position on screen 
-    addi $s0, $s0, -128 # new pos, move 1 unit up 
+    addi $s0, $s0, -1024 # new pos, move 1 unit up 
     sw $s0, CURR_POS
     jal DRAW_USER
     j main
@@ -158,14 +158,15 @@ GRAVITY:
     li $t0, 128
     div $s1, $t0
     mflo $t1
-    bgt $t1, 30, CHECK_KEY_INPUT # if we are in the last row, so we reached the ground
-
-    addi $s0, $s0, 128 # new pos, move 1 unit left 
+    bgt $t1, 124, CHECK_KEY_INPUT # if we are in the last row, so we reached the ground
+    #bgt $t1, 30, main # if we are in the last row, so we reached the ground
+    
+    addi $s0, $s0, 512 # new pos, move 2 unit down 
 
     jal ERASE_USER # erase character from old pos
     
     # update position on screen 
-    addi $s0, $s0, 128 # new pos, move 1 unit down 
+    addi $s0, $s0, 256 # new pos, move 1 unit down 
     sw $s0, CURR_POS
 
     jal DRAW_USER
