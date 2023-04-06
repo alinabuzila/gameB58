@@ -47,7 +47,7 @@
 #
 # .eqv  
 #.eqv  CURR_POS 0x10008000
-.eqv  RED_COLOR 0xff0000
+.eqv  PLAYER_COLOR 0xadd8e6
 .eqv  BLACK_COLOR 0x000000
     
 .data 
@@ -77,36 +77,45 @@ MOVE_LEFT:
     lw $s0 CURR_POS # load curr location in $s0 
     
     # check left boundary, if curr_pos mod 128 is 0 it means we are at left edge of screen, so don't move, go back to main
-    li $t0, 128
-    div $s0, $t0
+    li $t0, 256
+    lw $s1 BASE_ADDRESS # base address
+    sub $s1, $s0, $s1 # diff btwn curr and start
+    
+    div $s1, $t0
     mfhi $t0
     beqz $t0, main 
 
-    addi $s0, $s0, -4 # new pos, move 1 unit left 
+    addi $s0, $s0, -8 # new pos, move 1 unit left 
 
     jal ERASE_USER # erase character from old pos
 
     # update position on screen 
-    addi $s0, $s0, -4 # new pos, move 1 unit left, need to decrease again bc when returning from ERASE_USER $s0 changed
+    addi $s0, $s0, -8 # new pos, move 1 unit left, need to decrease again bc when returning from ERASE_USER $s0 changed
     sw $s0, CURR_POS
     jal DRAW_USER
     j main
     
 MOVE_RIGHT:
-    lw $s0 CURR_POS # load curr location in $s0 
+    lw $s0 CURR_POS # load curr location 
+    #addi $s0, $s0, 12 #add 12 offset becuase player is 16 pixels, so 4 units wide
 
-    # check left boundary, if curr_pos mod 128 is 0 it means we are at left edge of screen, so don't move, go back to main
-    li $t0, 127
-    div $s0, $t0
+    # check left boundary, if curr_pos mod 128 is 0 it means we are at right edge of screen, so don't move, go back to main
+    li $t0, 240
+    lw $s1 BASE_ADDRESS # base address
+    sub $s1, $s0, $s1 # diff btwn curr and start
+    sub $s1, $s0, $t0 
+    
+    li $t0, 256
+    div $s1, $t0
     mfhi $t1
     beqz $t1, main 
 
-    addi $s0, $s0, 4 # new pos, move 1 unit left 
+    addi $s0, $s0, 8 # new pos, move 1 unit left 
 
     jal ERASE_USER # erase character from old pos
     
     # update position on screen 
-    addi $s0, $s0, 4 # new pos, move 1 unit right 
+    addi $s0, $s0, 8 # new pos, move 1 unit right 
     sw $s0, CURR_POS
     jal DRAW_USER
     j main
@@ -131,9 +140,19 @@ MOVE_UP:
 
 DRAW_USER:
     lw $s0, CURR_POS
-    li $t1, RED_COLOR
+    li $t1, PLAYER_COLOR
+    #addi $s0, $s0, 240
 
     sw $t1, 0($s0)
+    sw $t1, 4($s0)
+    sw $t1, 8($s0)
+    sw $t1, 12($s0)
+    sw $t1, -256($s0)
+
+    sw $t1, -248($s0)
+    sw $t1, -512($s0)
+    sw $t1, -508($s0)
+    sw $t1, -504($s0)
     
     li $v0, 32
     li $a0, 28
@@ -146,6 +165,16 @@ ERASE_USER:
     li $t1, BLACK_COLOR
 
     sw $t1, 0($s0)
+    sw $t1, 4($s0)
+    sw $t1, 8($s0)
+    sw $t1, 12($s0)
+    sw $t1, -256($s0)
+
+    sw $t1, -248($s0)
+    sw $t1, -512($s0)
+    sw $t1, -508($s0)
+    sw $t1, -504($s0)
+    
     
     jr $ra
 	
