@@ -58,9 +58,9 @@
 .data 
     CURR_POS: 0x10009a00
     BASE_ADDRESS: 0x10008000
-    PLAT1: 0x1000B73C
-    PLAT2: 0x10009D64
-    PLAT3: 0x1000ADBC
+    PLAT3 : 0x1000B73C
+    PLAT1 : 0x10009D64
+    PLAT2 : 0x1000ADBC
     START_PLAT: 0x10009B00
 .text
 
@@ -241,7 +241,7 @@ check_start_platform_edge:
     ble $s0, $t2, CHECK_KEY_INPUT # player on platform start, keep them in same place 
 
     # player not on platform start, check platform 1
-    lw $t2 PLAT1
+    lw $t2 PLAT1 
     addi $s0, $s0, 16 # add width of player
     bgt $s0, $t2, check_platform1_edge
     j GRAVITY
@@ -251,12 +251,12 @@ check_platform1_edge:
     addi $s0, $s0, 256 # we want player to be on same row as platform to be able to compare locations 
 
 
-    lw $t2 PLAT1
-    addi $t2, $t2, 28 # add width of platform
+    lw $t2 PLAT1 
+    addi $t2, $t2, 40 # add width of platform
     ble $s0, $t2, CHECK_KEY_INPUT # player on platform start, keep them in same place  
 
     # player not on platform 1, check platform 2
-    lw $t2 PLAT2
+    lw $t2 PLAT2 
     addi $s0, $s0, 16 # add width of player
     bgt $s0, $t2, check_platform2_edge
     j GRAVITY
@@ -266,12 +266,12 @@ check_platform2_edge:
     addi $s0, $s0, 256 # we want player to be on same row as platform to be able to compare locations 
 
 
-    lw $t2 PLAT2
-    addi $t2, $t2, 40 # add width of platform
+    lw $t2 PLAT2 
+    addi $t2, $t2, 52 # add width of platform
     ble $s0, $t2, CHECK_KEY_INPUT # player on platform start, keep them in same place  
 
     # player not on platform 1, check platform 2
-    lw $t2 PLAT3
+    lw $t2 PLAT3 
     addi $s0, $s0, 16 # add width of player
     bgt $s0, $t2, check_platform3_edge
     j GRAVITY
@@ -281,8 +281,8 @@ check_platform3_edge:
     lw $s0 CURR_POS 
     addi $s0, $s0, 256 # we want player to be on same row as platform to be able to compare locations 
 
-    lw $t2 PLAT2
-    addi $t2, $t2, 40 # add width of platform
+    lw $t2 PLAT3
+    addi $t2, $t2, 28 # add width of platform
     ble $s0, $t2, CHECK_KEY_INPUT # player on platform start, keep them in same place  
 
     # player not on platform 1, gravity can move them downwards 
@@ -292,7 +292,7 @@ check_platform3_edge:
 DRAW_PLATFORMS:
     lw $s0, BASE_ADDRESS
 
-    lw $s1, PLAT1
+    lw $s1, PLAT3 
     li $t1, PLATFORM_COLOR
 
     sw $t1, 0($s1)
@@ -309,7 +309,7 @@ DRAW_PLATFORMS:
     sw $t1, 272($s1)
     sw $t1, 276($s1)
 
-    lw $s1, PLAT2
+    lw $s1, PLAT1 
     li $t1, YELLOW
 
     sw $t1, 0($s1)
@@ -333,7 +333,7 @@ DRAW_PLATFORMS:
     sw $t1, 288($s1)
     
 
-    lw $s1, PLAT3
+    lw $s1, PLAT2 
     li $t1, PINK
 
     sw $t1, 0($s1)
