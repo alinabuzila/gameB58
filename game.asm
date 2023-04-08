@@ -61,11 +61,18 @@
     PLAT3 : 0x1000B73C
     PLAT1 : 0x10009D64
     PLAT2 : 0x1000ADBC
+
     START_PLAT: 0x10009B00
     STAR1 : 0x10009B74
     STAR2 : 0x1000A8CC
     STAR3 : 0x1000B540
-    STARS_MOVEMENT : .word 0
+    STAR1_OFFSET : .word 0
+    STAR2_OFFSET : .word 0
+    STAR3_OFFSET : .word 0
+
+    STAR1_COLLECTED : .word 0
+    STAR2_COLLECTED : .word 0
+    STAR3_COLLECTED : .word 0
 .text
 
 START: 
@@ -75,14 +82,36 @@ START:
 	sw $s1, CURR_POS
 
     li $t2, 0
-    sw $t2, STARS_MOVEMENT
+    sw $t2, STAR3_OFFSET
+    sw $t2, STAR2_OFFSET
+    sw $t2, STAR1_OFFSET
+
+    sw $t2, STAR1_COLLECTED
+    sw $t2, STAR2_COLLECTED
+    sw $t2, STAR3_COLLECTED
+
+    lw $s1, BASE_ADDRESS
+    addi $s2, $s1, 7028
+	sw $s2, STAR1
+
+    addi $s2, $s1, 10444
+	sw $s2, STAR2
+
+    addi $s2, $s1, 13632
+	sw $s2, STAR3
 
     # jal DRAW_STARS
     j main
 
 main: 
     jal DRAW_PLATFORMS
-    jal DRAW_STARS
+
+    # lw $s1 STAR3_COLLECTED
+    # add $t0, $ra, 0 # store current location 
+    # blez $s1, DRAW_STARS
+    jal DRAW_STAR_3
+
+
     jal DRAW_USER
     #j CHECK_KEY_INPUT
 
@@ -304,45 +333,37 @@ check_platform3_edge:
     # player not on platform 1, gravity can move them downwards 
     j GRAVITY
 
-DRAW_STARS:
-    lw $s2, STARS_MOVEMENT 
+DRAW_STAR_3: # draw star and check collision 
+    lw $s2, STAR3_OFFSET
+    lw $s0 CURR_POS  
 
     li $s3, 4
     mult $s2, $s3
-    mflo $s3 # s3 holds the horizontal offset for moving stars 
+    mflo $s3 # horizontal offset for moving stars 
     
     # Draw star 3
     lw $s1, STAR3 
-    add $s1, $s1, $s3
+    add $s1, $s1, $s3 # s1 is location of lower left corner of star 
     li $t1, YELLOW
 
+    lw $s4 STAR3_COLLECTED
+    add $a1, $ra, 0 # jump return address 
+
+    bgtz $s4, DRAW_STAR_2 # if STAR3_COLLECTED == 1, we don't want to display star
+
+    # we just collected star, need to mark as collected in STAR3_COLLECTED, check next star
+    beq $s1, $s0, REMOVE_STAR3
+    addi $s0, $s0, 4
+    beq $s1, $s0, REMOVE_STAR3 
+    addi $s0, $s0, -256 # accumulative -256 + 4
+    beq $s1, $s0, REMOVE_STAR3 
+    addi $s0, $s0, -4
+    beq $s1, $s0, REMOVE_STAR3 
+
+
+    # otherwise display star
     sw $t1, 0($s1)
     sw $t1, 4($s1)
-    sw $t1, 8($s1)
-    sw $t1, -252($s1)
-
-    # Draw star 1
-    lw $s1, STAR1
-    add $s1, $s1, $s3
-    li $t1, YELLOW
-
-    sw $t1, 0($s1)
-    sw $t1, 4($s1)
-    sw $t1, 8($s1)
-    sw $t1, -252($s1)
-
-    # Draw star 2
-    li $s3, -256
-    mult $s2, $s3
-    mflo $s3 # s3 holds the vertical offset for moving stars 
-
-    lw $s1, STAR2
-    add $s1, $s1, $s3
-    li $t1, YELLOW
-
-    sw $t1, 0($s1)
-    sw $t1, 4($s1)
-    sw $t1, 8($s1)
     sw $t1, -252($s1)
 
     li $v0, 32
@@ -351,70 +372,172 @@ DRAW_STARS:
 
     # erase stars and redraw ############################################
     # ######################################################
-
-    lw $s2, STARS_MOVEMENT 
-
-    li $s3, 4
-    mult $s2, $s3
-    mflo $s3 # s3 holds the horizontal offset for moving stars 
     
-    # Draw star 3
-    lw $s1, STAR3 
-    add $s1, $s1, $s3
+    # erase star 3
     li $t1, BLACK_COLOR
 
     sw $t1, 0($s1)
     sw $t1, 4($s1)
-    sw $t1, 8($s1)
     sw $t1, -252($s1)
-
-    # Draw star 1
-    lw $s1, STAR1
-    add $s1, $s1, $s3
-    li $t1, BLACK_COLOR
-
-    sw $t1, 0($s1)
-    sw $t1, 4($s1)
-    sw $t1, 8($s1)
-    sw $t1, -252($s1)
-
-    # Draw star 2
-    li $s3, -256
-    mult $s2, $s3
-    mflo $s3 # s3 holds the vertical offset for moving stars 
-
-    lw $s1, STAR2
-    add $s1, $s1, $s3
-    li $t1, BLACK_COLOR
-
-    sw $t1, 0($s1)
-    sw $t1, 4($s1)
-    sw $t1, 8($s1)
-    sw $t1, -252($s1)
-    
 
      # update the offset by one so the star moves next time 
     addi $s2, $s2, 1 # new pos, move 1 unit up 
-    li $t1, 3
+    li $t1, 4
 
-    addi $t0, $ra, 0
-    beq $s2, $t1, RESET_STARS_OFFSET_AND_DRAW
+    beq $s2, $t1, RESET_STAR3_OFFSET_AND_DRAW
+    j ELSE1
+    RESET_STAR3_OFFSET_AND_DRAW:
+        li $s2, 0
+    ELSE1:
+        sw $s2, STAR3_OFFSET
+        
+        j DRAW_STAR_2
+        # jr $a1
 
-    sw $s2, STARS_MOVEMENT
+DRAW_STAR_2:
+    lw $s2, STAR2_OFFSET
+    lw $s0 CURR_POS  
 
-    jr $ra
+    li $s3, -256
+    mult $s2, $s3
+    mflo $s3 # horizontal offset for moving stars 
+    
+    # Draw star 2
+    lw $s1, STAR2
+    add $s1, $s1, $s3 # s1 is location of lower left corner of star 
+    li $t1, YELLOW
 
+    lw $s4 STAR2_COLLECTED
+
+    bgtz $s4, DRAW_STAR_1 # if STAR3_COLLECTED == 1, we don't want to display star
+
+    # we just collected star, need to mark as collected in STAR3_COLLECTED, check next star
+    beq $s1, $s0, REMOVE_STAR2
+    addi $s0, $s0, 4
+    beq $s1, $s0, REMOVE_STAR2
+    addi $s0, $s0, -256 # accumulative -256 + 4
+    beq $s1, $s0, REMOVE_STAR2
+    addi $s0, $s0, -4
+    beq $s1, $s0, REMOVE_STAR2
+
+
+    # otherwise display star
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, -252($s1)
+
+    li $v0, 32
+    li $a0, 28
+    syscall
+
+    # erase stars and redraw ############################################
+    # ######################################################
+    
+    # erase star 3
+    li $t1, BLACK_COLOR
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, -252($s1)
+
+     # update the offset by one so the star moves next time 
+    addi $s2, $s2, 1 # new pos, move 1 unit up 
+    li $t1, 4
+
+    beq $s2, $t1, RESET_STAR2_OFFSET_AND_DRAW
+    j ELSE2
+    RESET_STAR2_OFFSET_AND_DRAW:
+        li $s2, 0
+    ELSE2:
+        sw $s2, STAR2_OFFSET
+    
+        j DRAW_STAR_1
+        # jr $a1
+    
+
+DRAW_STAR_1:
+    lw $s2, STAR1_OFFSET
+    lw $s0 CURR_POS  
+
+    li $s3, 4
+    mult $s2, $s3
+    mflo $s3 # horizontal offset for moving stars 
+    
+    # Draw star 2
+    lw $s1, STAR1
+    add $s1, $s1, $s3 # s1 is location of lower left corner of star 
+    li $t1, YELLOW
+
+    lw $s4 STAR1_COLLECTED
+
+    bgtz $s4, REMOVE_STAR1 # if STAR3_COLLECTED == 1, we don't want to display star
+
+    # we just collected star, need to mark as collected in STAR3_COLLECTED, check next star
+    beq $s1, $s0, REMOVE_STAR1
+    addi $s0, $s0, 4
+    beq $s1, $s0, REMOVE_STAR1
+    addi $s0, $s0, -256 # accumulative -256 + 4
+    beq $s1, $s0, REMOVE_STAR1
+    addi $s0, $s0, -4
+    beq $s1, $s0, REMOVE_STAR1
+
+
+    # otherwise display star
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, -252($s1)
+
+    li $v0, 32
+    li $a0, 28
+    syscall
+
+    # erase stars and redraw ############################################
+    # ######################################################
+    
+    # erase star 3
+    li $t1, BLACK_COLOR
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, -252($s1)
+
+     # update the offset by one so the star moves next time 
+    addi $s2, $s2, 1 # new pos, move 1 unit up 
+    li $t1, 4
+
+    beq $s2, $t1, RESET_STAR1_OFFSET_AND_DRAW
+    j ELSE3
+
+    RESET_STAR1_OFFSET_AND_DRAW: 
+        li $s2, 0
+    ELSE3:
+        sw $s2, STAR1_OFFSET
+    
+        jr $a1
+
+REMOVE_STAR3:
+    # set the collected to 1
+    # go to DRAW_STAR_2
+    li $s4 1
+    sw $s4, STAR3_COLLECTED
+    j DRAW_STAR_2
+
+REMOVE_STAR2:
+    # set the collected to 1
+    # go to DRAW_STAR_2
+    li $s4 1
+    sw $s4, STAR2_COLLECTED
+    jr $a1
+
+REMOVE_STAR1:
+    # set the collected to 1
+    # go to DRAW_STAR_2
+    li $s4 1
+    sw $s4, STAR1_COLLECTED
+    jr $a1
    
 
-RESET_STARS_OFFSET_AND_DRAW:
-    li $s0, 0
-    sw $s0, STARS_MOVEMENT
 
-   # li $v0, 32
-   # li $a0, 200
-   # syscall
-
-    jr $t0
 
 
 DRAW_PLATFORMS:
