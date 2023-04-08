@@ -111,6 +111,12 @@ main:
     # blez $s1, DRAW_STARS
     jal DRAW_STAR_3
 
+    li $v0, 32
+    li $a0, 28
+    syscall
+
+    jal ERASE_STARS
+
 
     jal DRAW_USER
     #j CHECK_KEY_INPUT
@@ -366,22 +372,25 @@ DRAW_STAR_3: # draw star and check collision
     sw $t1, 4($s1)
     sw $t1, -252($s1)
 
-    li $v0, 32
-    li $a0, 28
-    syscall
+    j DRAW_STAR_2
 
-    # erase stars and redraw ############################################
-    # ######################################################
+ERASE_STARS: 
+    lw $s2, STAR3_OFFSET
+
+    li $s3, 4
+    mult $s2, $s3
+    mflo $s3 # horizontal offset for moving stars 
     
-    # erase star 3
+    # ERASE STAR 3 ###########
+    lw $s1, STAR3 
+    add $s1, $s1, $s3 # s1 is location of lower left corner of star 
     li $t1, BLACK_COLOR
 
     sw $t1, 0($s1)
     sw $t1, 4($s1)
     sw $t1, -252($s1)
 
-     # update the offset by one so the star moves next time 
-    addi $s2, $s2, 1 # new pos, move 1 unit up 
+    addi $s2, $s2, 1 # update offset 
     li $t1, 4
 
     beq $s2, $t1, RESET_STAR3_OFFSET_AND_DRAW
@@ -391,8 +400,59 @@ DRAW_STAR_3: # draw star and check collision
     ELSE1:
         sw $s2, STAR3_OFFSET
         
-        j DRAW_STAR_2
-        # jr $a1
+    # ERASE STAR 2 ###########
+    lw $s2, STAR2_OFFSET
+
+    li $s3, -256
+    mult $s2, $s3
+    mflo $s3 # horizontal offset for moving stars 
+    
+    lw $s1, STAR2 
+    add $s1, $s1, $s3 # s1 is location of lower left corner of star 
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, -252($s1)
+
+    addi $s2, $s2, 1 # update offset
+    li $t1, 4
+
+    beq $s2, $t1, RESET_STAR2_OFFSET_AND_DRAW
+    j ELSE2
+    RESET_STAR2_OFFSET_AND_DRAW:
+        li $s2, 0
+    ELSE2:
+        sw $s2, STAR2_OFFSET
+
+    
+    # ERASE STAR 1 ###########
+    lw $s2, STAR1_OFFSET
+
+    li $s3, 4
+    mult $s2, $s3
+    mflo $s3 # horizontal offset for moving stars 
+    
+    lw $s1, STAR1 
+    add $s1, $s1, $s3 # s1 is location of lower left corner of star 
+
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, -252($s1)
+
+    addi $s2, $s2, 1 # update offset
+    li $t1, 4
+
+    beq $s2, $t1, RESET_STAR1_OFFSET_AND_DRAW
+    j ELSE3
+
+    RESET_STAR1_OFFSET_AND_DRAW: 
+        li $s2, 0
+    ELSE3:
+        sw $s2, STAR1_OFFSET
+
+    jr $ra
+    
 
 DRAW_STAR_2:
     lw $s2, STAR2_OFFSET
@@ -426,32 +486,10 @@ DRAW_STAR_2:
     sw $t1, 4($s1)
     sw $t1, -252($s1)
 
-    li $v0, 32
-    li $a0, 28
-    syscall
 
-    # erase stars and redraw ############################################
-    # ######################################################
+
     
-    # erase star 3
-    li $t1, BLACK_COLOR
-
-    sw $t1, 0($s1)
-    sw $t1, 4($s1)
-    sw $t1, -252($s1)
-
-     # update the offset by one so the star moves next time 
-    addi $s2, $s2, 1 # new pos, move 1 unit up 
-    li $t1, 4
-
-    beq $s2, $t1, RESET_STAR2_OFFSET_AND_DRAW
-    j ELSE2
-    RESET_STAR2_OFFSET_AND_DRAW:
-        li $s2, 0
-    ELSE2:
-        sw $s2, STAR2_OFFSET
-    
-        j DRAW_STAR_1
+    j DRAW_STAR_1
         # jr $a1
     
 
@@ -487,33 +525,8 @@ DRAW_STAR_1:
     sw $t1, 4($s1)
     sw $t1, -252($s1)
 
-    li $v0, 32
-    li $a0, 28
-    syscall
-
-    # erase stars and redraw ############################################
-    # ######################################################
     
-    # erase star 3
-    li $t1, BLACK_COLOR
-
-    sw $t1, 0($s1)
-    sw $t1, 4($s1)
-    sw $t1, -252($s1)
-
-     # update the offset by one so the star moves next time 
-    addi $s2, $s2, 1 # new pos, move 1 unit up 
-    li $t1, 4
-
-    beq $s2, $t1, RESET_STAR1_OFFSET_AND_DRAW
-    j ELSE3
-
-    RESET_STAR1_OFFSET_AND_DRAW: 
-        li $s2, 0
-    ELSE3:
-        sw $s2, STAR1_OFFSET
-    
-        jr $a1
+    jr $a1
 
 REMOVE_STAR3:
     # set the collected to 1
