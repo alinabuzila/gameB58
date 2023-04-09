@@ -52,6 +52,8 @@
 .eqv  PINK 0xFFC0CB
 .eqv  PURPLE 0xBF40BF
 .eqv  WHITE 0xFFFFFF
+.eqv  GREEN 0x008000
+
 .eqv  SOME_COLOR 0xad2a11
 .eqv  BLACK_COLOR 0x000000
 .eqv PLATFORM_COLOR 0xc4a484
@@ -81,7 +83,7 @@ START:
     jal DRAW_SPIKES
     jal ERASE_USER
     lw $s1, BASE_ADDRESS
-	addi $s1, $s1, 6656
+	addi $s1, $s1, 6664
 	sw $s1, CURR_POS
 
     li $t2, 0
@@ -106,8 +108,32 @@ START:
     # jal DRAW_STARS
     j main
 
+
 main: 
     jal DRAW_PLATFORMS
+
+    # check if they won 
+    li $s5, 1
+    lw $s4 STAR1_COLLECTED
+    beq $s4, $s5, STAR1_WON
+    j STAR1_ELSE
+    STAR1_WON:
+        lw $s4 STAR2_COLLECTED
+        beq $s4, $s5, STAR2_WON
+        j STAR2_ELSE
+        STAR2_WON:
+            lw $s4 STAR3_COLLECTED
+            beq $s4, $s5, STAR3_WON
+            j STAR3_ELSE
+            STAR3_WON:
+                jal ERASE_USER
+                j WIN_SCREEN
+            STAR3_ELSE:
+                li $s5, 1 # doing nothing 
+        STAR2_ELSE:
+            li $s5, 1 # doing nothing 
+    STAR1_ELSE:
+        li $s5, 1 # doing nothing 
 
     # lw $s1 STAR3_COLLECTED
     # add $t0, $ra, 0 # store current location 
@@ -801,24 +827,62 @@ DRAW_SPIKES:
     jr $ra
 
 
-END_SCREEN:
+LOSE_SCREEN:
     lw $s1, BASE_ADDRESS
 	li $t2, WHITE
-	li $t3, WHITE
 
     addi $s1, $s1, 1664
         
     sw $t2, 0($s1)
     sw $t2, 256($s1)
     sw $t2, 512($s1)
-    sw $t2, 256($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+    sw $t2, 1280($s1)
 
     sw $t2, 4($s1)
     sw $t2, 8($s1)
-    sw $t2, 12($s1)
-    sw $t2, 16($s1)
-    sw $t2, 20($s1)
-    sw $t2, 24($s1)
-    sw $t2, 28($s1)
+
+    sw $t2, 1280($s1)
+    sw $t2, 1284($s1)
+        sw $t2, 1288($s1)
+        sw $t2, 1292($s1)
+    sw $t2, 780($s1)
+    sw $t2, 1036($s1)
+
+   li $t9, 0xffff0000 
+
+    beq $t2, 112, START # ASCII code of 'p' is 112, restart game 
+
+
+
+WIN_SCREEN:
+    lw $s1, BASE_ADDRESS
+	li $t2, GREEN
+
+    addi $s1, $s1, 1664
+        
+    sw $t2, 0($s1)
+    sw $t2, 256($s1)
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+    sw $t2, 1280($s1)
+
+    sw $t2, 4($s1)
+    sw $t2, 8($s1)
+
+    sw $t2, 1280($s1)
+    sw $t2, 1284($s1)
+        sw $t2, 1288($s1)
+        sw $t2, 1292($s1)
+    sw $t2, 780($s1)
+    sw $t2, 1036($s1)
+
+   li $t9, 0xffff0000 
+
+    beq $t2, 112, START # ASCII code of 'p' is 112, restart game 
+
+
         
         
