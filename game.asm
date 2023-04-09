@@ -51,12 +51,13 @@
 .eqv  YELLOW 0xFFFF00
 .eqv  PINK 0xFFC0CB
 .eqv  PURPLE 0xBF40BF
+.eqv  WHITE 0xFFFFFF
 .eqv  SOME_COLOR 0xad2a11
 .eqv  BLACK_COLOR 0x000000
 .eqv PLATFORM_COLOR 0xc4a484
     
 .data 
-    CURR_POS: 0x10009a00
+    CURR_POS: 0x10009a08
     BASE_ADDRESS: 0x10008000
     PLAT3 : 0x1000B73C
     PLAT1 : 0x10009D64
@@ -75,7 +76,9 @@
     STAR3_COLLECTED : .word 0
 .text
 
+
 START: 
+    jal DRAW_SPIKES
     jal ERASE_USER
     lw $s1, BASE_ADDRESS
 	addi $s1, $s1, 6656
@@ -647,3 +650,175 @@ DRAW_PLATFORMS:
 
     jr $ra
 
+
+DRAW_SPIKES:
+    lw $s0, BASE_ADDRESS
+
+    li $t1, PLATFORM_COLOR
+
+    sw $t1, 0($s0)
+    sw $t1, 512($s0)
+    sw $t1, 1024($s0)
+    sw $t1, 1536($s0)
+    sw $t1, 2048($s0)
+    sw $t1, 2560($s0)
+    sw $t1, 3072($s0)
+    sw $t1, 3584($s0)
+    sw $t1, 4096($s0)
+    sw $t1, 4608($s0)
+    sw $t1, 5120($s0)
+    sw $t1, 5632($s0)
+    sw $t1, 6144($s0)
+    sw $t1, 6656($s0)
+    sw $t1, 7168($s0)
+    sw $t1, 7680($s0)
+    sw $t1, 8192($s0)
+    sw $t1, 8704($s0)
+    sw $t1, 9216($s0)
+    sw $t1, 9728($s0)
+    sw $t1, 10240($s0)
+    sw $t1, 10752($s0)
+    sw $t1, 11264($s0)
+    sw $t1, 11776($s0)
+    sw $t1, 12288($s0)
+    sw $t1, 12800($s0)
+    sw $t1, 13312($s0)
+    sw $t1, 13824($s0)
+    sw $t1, 14336($s0)
+    sw $t1, 14848($s0)
+    sw $t1, 15360($s0)
+    sw $t1, 15872($s0)
+    
+    sw $t1, 0($s0)
+    sw $t1, 8($s0)
+    sw $t1, 16($s0)
+    sw $t1, 24($s0)
+    sw $t1, 32($s0)
+    sw $t1, 40($s0)
+    sw $t1, 48($s0)
+    sw $t1, 56($s0)
+    sw $t1, 64($s0)
+    sw $t1, 72($s0)
+    sw $t1, 80($s0)
+    sw $t1, 88($s0)
+    sw $t1, 96($s0)
+    sw $t1, 104($s0)
+    sw $t1, 112($s0)
+    sw $t1, 120($s0)
+    sw $t1, 128($s0)
+    sw $t1, 136($s0)
+    sw $t1, 144($s0)
+    sw $t1, 152($s0)
+    sw $t1, 160($s0)
+    sw $t1, 168($s0)
+    sw $t1, 176($s0)
+    sw $t1, 184($s0)
+    sw $t1, 192($s0)
+    sw $t1, 200($s0)
+    sw $t1, 208($s0)
+    sw $t1, 216($s0)
+    sw $t1, 224($s0)
+    sw $t1, 232($s0)
+    sw $t1, 240($s0)
+    sw $t1, 248($s0)
+    
+    sw $t1, 252($s0)
+    sw $t1, 764($s0)
+    sw $t1, 1276($s0)
+    sw $t1, 1788($s0)
+    sw $t1, 2300($s0)
+    sw $t1, 2812($s0)
+    sw $t1, 3324($s0)
+    sw $t1, 3836($s0)
+    sw $t1, 4348($s0)
+    sw $t1, 4860($s0)
+    sw $t1, 5372($s0)
+    sw $t1, 5884($s0)
+    sw $t1, 6396($s0)
+    sw $t1, 6908($s0)
+    sw $t1, 7420($s0)
+    sw $t1, 7932($s0)
+    sw $t1, 8444($s0)
+    sw $t1, 8956($s0)
+    sw $t1, 9468($s0)
+    sw $t1, 9980($s0)
+    sw $t1, 10492($s0)
+    sw $t1, 11004($s0)
+    sw $t1, 11516($s0)
+    sw $t1, 12028($s0)
+    sw $t1, 12540($s0)
+    sw $t1, 13052($s0)
+    sw $t1, 13564($s0)
+    sw $t1, 14076($s0)
+    sw $t1, 14588($s0)
+
+    sw $t1, 15100($s0)
+    sw $t1, 15612($s0)
+    sw $t1, 16124($s0)
+    
+  
+
+    sw $t1, 16128($s0)
+    sw $t1, 16136($s0)
+    sw $t1, 16144($s0)
+    sw $t1, 16152($s0)
+
+    sw $t1, 16160($s0)
+    sw $t1, 16168($s0)
+    sw $t1, 16176($s0)
+    sw $t1, 16184($s0)
+
+    sw $t1, 16192($s0)
+    sw $t1, 16200($s0)
+    sw $t1, 16208($s0)
+    sw $t1, 16216($s0)
+
+    sw $t1, 16224($s0)
+    sw $t1, 16232($s0)
+    sw $t1, 16240($s0)
+    sw $t1, 16248($s0)
+
+    sw $t1, 16256($s0)
+    sw $t1, 16264($s0)
+    sw $t1, 16272($s0)
+    sw $t1, 16280($s0)
+
+    sw $t1, 16288($s0)
+    sw $t1, 16296($s0)
+    sw $t1, 16304($s0)
+    sw $t1, 16312($s0)
+
+    sw $t1, 16320($s0)
+    sw $t1, 16328($s0)
+    sw $t1, 16336($s0)
+    sw $t1, 16344($s0)
+
+    sw $t1, 16352($s0)
+    sw $t1, 16360($s0)
+    sw $t1, 16368($s0)
+    sw $t1, 16376($s0)
+    sw $t1, 163684($s0)
+    jr $ra
+
+
+END_SCREEN:
+    lw $s1, BASE_ADDRESS
+	li $t2, WHITE
+	li $t3, WHITE
+
+    addi $s1, $s1, 1664
+        
+    sw $t2, 0($s1)
+    sw $t2, 256($s1)
+    sw $t2, 512($s1)
+    sw $t2, 256($s1)
+
+    sw $t2, 4($s1)
+    sw $t2, 8($s1)
+    sw $t2, 12($s1)
+    sw $t2, 16($s1)
+    sw $t2, 20($s1)
+    sw $t2, 24($s1)
+    sw $t2, 28($s1)
+        
+        
