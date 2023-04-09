@@ -184,7 +184,7 @@ MOVE_LEFT:
     
     div $s1, $t0
     mfhi $t0
-    beqz $t0, main 
+    beqz $t0, LOSE_SCREEN 
 
     addi $s0, $s0, -8 # new pos, move 1 unit left 
 
@@ -209,7 +209,7 @@ MOVE_RIGHT:
     li $t0, 256
     div $s1, $t0
     mfhi $t1
-    beqz $t1, main 
+    beqz $t1, LOSE_SCREEN 
 
     # check for platforms
 
@@ -230,7 +230,7 @@ MOVE_UP:
     # check top screen boundary
     lw $s1 BASE_ADDRESS 
     sub $s2, $s0, $s1 
-    blt $s2, 128, main 
+    blt $s2, 128, LOSE_SCREEN 
 
     # check for platforms above 
 
@@ -295,7 +295,7 @@ GRAVITY:
     div $s1, $t0
     mflo $t1
     bgt $t1, 124, CHECK_KEY_INPUT # if we are in the last row, so we reached the ground
-    #bgt $t1, 30, main # if we are in the last row, so we reached the ground
+    #bgt $t1, 30, LOSE_SCREEN # if we are in the last row, so we reached the ground
     
 
     addi $s0, $s0, 512 # new pos, move 2 unit down 
@@ -851,9 +851,10 @@ LOSE_SCREEN:
     sw $t2, 1036($s1)
 
    li $t9, 0xffff0000 
+    lw $t2, 4($t9) # this assumes $t9 is set to 0xfff0000 from before, now $t2 holds value for key pressed
 
     beq $t2, 112, START # ASCII code of 'p' is 112, restart game 
-
+    j LOSE_SCREEN
 
 
 WIN_SCREEN:
@@ -880,9 +881,14 @@ WIN_SCREEN:
     sw $t2, 1036($s1)
 
    li $t9, 0xffff0000 
+    lw $t2, 4($t9) # this assumes $t9 is set to 0xfff0000 from before, now $t2 holds value for key pressed
 
     beq $t2, 112, START # ASCII code of 'p' is 112, restart game 
 
+    j WIN_SCREEN
+        
 
-        
-        
+end:	
+	li $v0, 10
+	syscall
+	
