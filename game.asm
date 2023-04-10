@@ -1168,7 +1168,7 @@ WIN_SCREEN:
     li $t9, 0xffff0000 
     lw $t2, 4($t9) # this assumes $t9 is set to 0xfff0000 from before, now $t2 holds value for key pressed
 
-    beq $t2, 112, RESTART_LOGIC2 # ASCII code of 'p' is 112, restart game 
+    beq $t2, 112, RESTART_LOGIC2 # ASCII code of 'p' is 112, restart game
     j WIN_SCREEN
     RESTART_LOGIC2:
         li $a1, BLACK_COLOR # colour for game over text
@@ -1682,7 +1682,8 @@ DRAW_MENU_SCREEN:
     # ######## draw platforms 
 
     lw $s1, PLAT3 
-    li $t1, PLATFORM_COLOR
+    add $s1, $s1, -452
+    add $t1, $t2, 0
 
     sw $t1, 0($s1)
     sw $t1, 4($s1)
@@ -1699,7 +1700,30 @@ DRAW_MENU_SCREEN:
     sw $t1, 276($s1)
 
     lw $s1, PLAT1 
-    li $t1, YELLOW
+    add $s1, $s1, 1284
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, 8($s1)
+    sw $t1, 12($s1)
+    sw $t1, 16($s1)
+    sw $t1, 20($s1)
+    sw $t1, 24($s1)
+    sw $t1, 28($s1)
+    sw $t1, 32($s1)
+    sw $t1, 36($s1)
+
+    sw $t1, 260($s1)
+    sw $t1, 264($s1)
+    sw $t1, 268($s1)
+    sw $t1, 272($s1)
+    sw $t1, 276($s1)
+    sw $t1, 280($s1)
+    sw $t1, 284($s1)
+    sw $t1, 288($s1)
+
+    lw $s1, PLAT1 
+    add $s1, $s1, 3764
 
     sw $t1, 0($s1)
     sw $t1, 4($s1)
@@ -1723,7 +1747,6 @@ DRAW_MENU_SCREEN:
     
 
     lw $s1, PLAT2 
-    li $t1, PINK
 
     sw $t1, 0($s1)
     sw $t1, 4($s1)
@@ -1752,7 +1775,6 @@ DRAW_MENU_SCREEN:
     sw $t1, 300($s1)
 
     lw $s1, START_PLAT
-    li $t1, PURPLE
     
     # starting platform
     sw $t1, 0($s1)
