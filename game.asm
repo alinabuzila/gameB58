@@ -80,12 +80,13 @@
 .text
 
 MENU:
+    jal CLEAR_SCREEN
     j MENU_SCREEN # if i have issues change this to j, and inside MENU remove platforms and use jr $ra instead of 
 
 START: 
     # j WIN_SCREEN
-    jal DRAW_SPIKES
     jal ERASE_USER
+    jal DRAW_SPIKES
     lw $s1, BASE_ADDRESS
 	addi $s1, $s1, 6664
 	sw $s1, CURR_POS
@@ -185,13 +186,8 @@ MOVE_LEFT:
     # check left boundary, if curr_pos mod 128 is 0 it means we are at left edge of screen, so don't move, go back to main
     li $t0, 256
     lw $s1 BASE_ADDRESS # base address
-    sub $s1, $s0, $s1 # diff btwn curr and start
-    
-    div $s1, $t0
-    mfhi $t0
-    beqz $t0, LOSE_SCREEN 
 
-    addi $s0, $s0, -8 # new pos, move 1 unit left 
+    # addi $s0, $s0, -8 # new pos, move 1 unit left 
 
     jal ERASE_USER # erase character from old pos
 
@@ -199,6 +195,12 @@ MOVE_LEFT:
     addi $s0, $s0, -8 # new pos, move 1 unit left, need to decrease again bc when returning from ERASE_USER $s0 changed
     sw $s0, CURR_POS
     jal DRAW_USER
+
+    sub $s1, $s0, $s1 # diff btwn curr and start
+    div $s1, $t0
+    mfhi $t0
+    beq $t0, $zero, LOSE_SCREEN 
+
     j main
     
 MOVE_RIGHT:
@@ -208,18 +210,8 @@ MOVE_RIGHT:
     # check right screen boundary 
     li $t0, 240
     lw $s1 BASE_ADDRESS 
-    sub $s1, $s0, $s1 # diff btwn curr and start
-    sub $s1, $s0, $t0 
-    
-    li $t0, 256
-    div $s1, $t0
-    mfhi $t1
-    beqz $t1, LOSE_SCREEN 
 
-    # check for platforms
-
-
-    addi $s0, $s0, 8 # new pos, move 1 unit left 
+    # addi $s0, $s0, 8 # new pos, move 1 unit left 
 
     jal ERASE_USER # erase character from old pos
     
@@ -227,6 +219,14 @@ MOVE_RIGHT:
     addi $s0, $s0, 8 # new pos, move 1 unit right 
     sw $s0, CURR_POS
     jal DRAW_USER
+
+    sub $s1, $s0, $s1 # diff btwn curr and start
+    sub $s1, $s0, $t0 
+    li $t0, 256
+    div $s1, $t0
+    mfhi $t1
+    beq $t1, $zero, LOSE_SCREEN 
+
     j main
 
 MOVE_UP:
@@ -299,9 +299,9 @@ GRAVITY:
     li $t0, 128
     div $s1, $t0
     mflo $t1
-    bgt $t1, 124, CHECK_KEY_INPUT # if we are in the last row, so we reached the ground
+    bgt $t1, 124, LOSE_SCREEN # if we are in the last row, so we reached the ground
 
-    #bgt $t1, 30, LOSE_SCREEN # if we are in the last row, so we reached the ground
+    # bgt $t1, 30, LOSE_SCREEN # if we are in the last row, so we reached the ground
     
 
     addi $s0, $s0, 512 # new pos, move 2 unit down 
@@ -1043,16 +1043,121 @@ DRAW_LOSE_SCREEN:
     sw $t2, 908($s1)
 
 
-    # letter p 
-    addi $s1, $s1, 512
-    sw $t2, 2068($s1)
-    sw $t2, 2324($s1)
+    # 'p' to play
+    
+    lw $s1, BASE_ADDRESS
+    addi $s1, $s1, 4660
 
-    sw $t2, 2072($s1)
-    sw $t2, 2328($s1)
+    # '
+    sw $t2, 0($s1)
+    sw $t2, 256($s1)
 
-    sw $t2, 2580($s1)
-    sw $t2, 2836($s1)
+    # letter p
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+    sw $t2, 1280($s1)
+    sw $t2, 1536($s1)
+
+    sw $t2, 516($s1)
+    sw $t2, 520($s1)
+    sw $t2, 1028($s1)
+    sw $t2, 1032($s1)
+
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+
+    # '
+    addi $s1, $s1, 8
+    sw $t2, 0($s1)
+    sw $t2, 256($s1)
+
+
+    # letter t
+    addi $s1, $s1, 20
+    sw $t2, 0($s1)
+    sw $t2, 256($s1)
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+
+    sw $t2, 252($s1)
+    sw $t2, 260($s1)
+
+    # letter 0
+    addi $s1, $s1, 12
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+
+    sw $t2, 516($s1)
+    sw $t2, 1028($s1)
+
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+
+    # letter p
+    addi $s1, $s1, 20
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+    sw $t2, 1280($s1)
+    sw $t2, 1536($s1)
+
+    sw $t2, 516($s1)
+    sw $t2, 520($s1)
+    sw $t2, 1028($s1)
+    sw $t2, 1032($s1)
+
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+
+
+    # letter l
+    addi $s1, $s1, 8
+    sw $t2, 0($s1)
+    sw $t2, 256($s1)
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+
+    # letter 0
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+
+    sw $t2, 516($s1)
+    sw $t2, 1028($s1)
+
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+    sw $t2, 1280($s1)
+
+    # letter y
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+    sw $t2, 1028($s1)
+
+
+    addi $s1, $s1, 8
+    sw $t2, 512($s1)
+    sw $t2, 768($s1)
+    sw $t2, 1024($s1)
+    sw $t2, 1280($s1)
+    sw $t2, 1536($s1)
+
     
     jr $ra
 
@@ -1350,7 +1455,6 @@ DRAW_MENU_SCREEN:
 
     # ############ 'p' to play
     
-    lw $s1, BASE_ADDRESS
     addi $s1, $s1, 2620
 
     # '
@@ -1571,8 +1675,122 @@ DRAW_MENU_SCREEN:
     sw $t2, 252($s1)
     sw $t2, 260($s1)
 
+
+
+
+
+    # ######## draw platforms 
+
+    lw $s1, PLAT3 
+    li $t1, PLATFORM_COLOR
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, 8($s1)
+    sw $t1, 12($s1)
+    sw $t1, 16($s1)
+    sw $t1, 20($s1)
+    sw $t1, 24($s1)
+
+    sw $t1, 260($s1)
+    sw $t1, 264($s1)
+    sw $t1, 268($s1)
+    sw $t1, 272($s1)
+    sw $t1, 276($s1)
+
+    lw $s1, PLAT1 
+    li $t1, YELLOW
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, 8($s1)
+    sw $t1, 12($s1)
+    sw $t1, 16($s1)
+    sw $t1, 20($s1)
+    sw $t1, 24($s1)
+    sw $t1, 28($s1)
+    sw $t1, 32($s1)
+    sw $t1, 36($s1)
+
+    sw $t1, 260($s1)
+    sw $t1, 264($s1)
+    sw $t1, 268($s1)
+    sw $t1, 272($s1)
+    sw $t1, 276($s1)
+    sw $t1, 280($s1)
+    sw $t1, 284($s1)
+    sw $t1, 288($s1)
+    
+
+    lw $s1, PLAT2 
+    li $t1, PINK
+
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, 8($s1)
+    sw $t1, 12($s1)
+    sw $t1, 16($s1)
+    sw $t1, 20($s1)
+    sw $t1, 24($s1)
+    sw $t1, 28($s1)
+    sw $t1, 32($s1)
+    sw $t1, 36($s1)
+    sw $t1, 40($s1)
+    sw $t1, 44($s1)
+    sw $t1, 48($s1)
+
+    sw $t1, 260($s1)
+    sw $t1, 264($s1)
+    sw $t1, 268($s1)
+    sw $t1, 272($s1)
+    sw $t1, 276($s1)
+    sw $t1, 280($s1)
+    sw $t1, 284($s1)
+    sw $t1, 288($s1)
+    sw $t1, 292($s1)
+    sw $t1, 296($s1)
+    sw $t1, 300($s1)
+
+    lw $s1, START_PLAT
+    li $t1, PURPLE
+    
+    # starting platform
+    sw $t1, 0($s1)
+    sw $t1, 4($s1)
+    sw $t1, 8($s1)
+    sw $t1, 12($s1)
+    sw $t1, 16($s1)
+    sw $t1, 20($s1)
+    sw $t1, 24($s1)
+    
+    sw $t1, 256($s1)
+    sw $t1, 260($s1)
+    sw $t1, 264($s1)
+    sw $t1, 268($s1)
+    sw $t1, 272($s1)
+    sw $t1, 276($s1)
+
     jr $ra
 
+
+CLEAR_SCREEN:
+    # set screen base address in $s0
+    lw $s0, BASE_ADDRESS
+
+    li $t0, BLACK_COLOR
+
+    li $t2, 4096     # loop counter for column
+
+    clear_screen:
+        sw $t0, 0($s0)     # write black to pixel
+        addi $s0, $s0, 4   # advance to next pixel
+        addi $t2, $t2, -1  # decrement column counter
+        bne $t2, $zero, clear_screen   # loop until column counter is zero
+        jr $ra
+
+    jr $ra
+
+ 
 
 end:	
 	li $v0, 10
