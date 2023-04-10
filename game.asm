@@ -14,23 +14,40 @@
 #
 # Which milestones have been reached in this submission?
 # (See the assignment handout for descriptions of the milestones)
-# - Milestone 1/2/3 (choose the one the applies)
+# - Milestone 3
 #
 # Which approved features have been implemented for milestone 3?
 # (See the assignment handout for the list of additional features)
-# 1. (fill in the feature, if any)
-# 2. (fill in the feature, if any)
-# 3. (fill in the feature, if any)
-# ... (add more if necessary)
+#
+# 1. Health/score [2 marks]: a player's score is determined by the number of stars they collect. The score is out of 3 since
+#       there are 3 stars. The score is always displayed in the top right corner as three grey squares which turn green as you collect
+#       stars. Collecting all 3 stars means you win. The score is displayed while you play and on the win and game over screens. 
+#      
+# 2. Fail condition [1 mark]: the fail condition for my game is touching the spikes which are along all 4 sides of the screen (bottom included). When you touch
+#         the spikes you lose and will see a game over screen. Note that from the game over screen you can press 'p' to restart.
+# 
+# 3. Win condition [1 mark]: The player wins if they collect all three stars, ie get a 3/3 score. They will then see a "Winner" screen where they can press 
+#       'p' to restart. 
+# 
+# 4. Moving objects [2 mark]: The three star pickups are moving around the level (specifically moving back and forth or up and down). They disappear when 
+#       the player collects (collides) them. 
+# 
+# 5. Start menu [1 mark]: when initially running the game, there is a start menu that displays the user's options which are 'p' to play and 'q' to quit. 
+#       It also has nice platforms graphics drawn. Note these are not the same platforms as in the level (notice different colours and positions), which shows 
+#       that i am clearing the screen. 
+# 
+# Note: my platforms only have collision detection on top. This is intended. In certain games like mario, you can reach certain platforms by jumping 
+#   through them from undernearth. 
 #
 # Link to video demonstration for final submission:
 # - (insert YouTube / MyMedia / other URL here). Make sure we can view it!
 #
 # Are you OK with us sharing the video with people outside course staff?
-# - no, and please share this project github link as well!
+# - no
 #
 # Any additional information that the TA needs to know:
-# - (write here, if any)
+# Note: my platforms only have collision detection on top. This is intended. In certain games like mario, you can reach certain platforms by jumping 
+#   through them from undernearth. 
 #
 #####################################################################
 
