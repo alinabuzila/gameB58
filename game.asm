@@ -40,7 +40,7 @@
 #   through them from undernearth. 
 #
 # Link to video demonstration for final submission:
-# - (insert YouTube / MyMedia / other URL here). Make sure we can view it!
+# - https://play.library.utoronto.ca/watch/20d3bbc8d90f453e127ea4ebde931a19
 #
 # Are you OK with us sharing the video with people outside course staff?
 # - no
